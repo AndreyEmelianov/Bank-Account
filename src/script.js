@@ -213,3 +213,21 @@ btnClose.addEventListener('click', function (event) {
   inputCloseNickname.value = '';
   inputClosePin.value = '';
 });
+
+// запрос займа средств
+
+btnLoan.addEventListener('click', function (event) {
+  event.preventDefault();
+
+  const loanAmount = +inputLoanAmount.value;
+
+  if (
+    loanAmount > 0 &&
+    currentAccount.transactions.some(trans => trans >= (loanAmount * 10) / 100)
+  ) {
+    currentAccount.transactions.push(loanAmount);
+    updateUi(currentAccount);
+  }
+
+  inputLoanAmount.value = '';
+});
