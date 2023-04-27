@@ -62,7 +62,7 @@ const inputLoginPin = document.querySelector('.login__input--pin');
 const inputTransferTo = document.querySelector('.form__input--to');
 const inputTransferAmount = document.querySelector('.form__input--amount');
 const inputLoanAmount = document.querySelector('.form__input--loan-amount');
-const inputCloseUsername = document.querySelector('.form__input--user');
+const inputCloseNickname = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 // отображение транзакций для аккаунта
@@ -189,4 +189,27 @@ btnTransfer.addEventListener('click', function (event) {
     recipientAccount.transactions.push(transferAmount);
     updateUi(currentAccount);
   }
+});
+
+// логика закрытия счёта в аккаунте
+
+btnClose.addEventListener('click', function (event) {
+  event.preventDefault();
+
+  if (
+    inputCloseNickname.value === currentAccount.nickname &&
+    +inputClosePin.value === currentAccount.pin
+  ) {
+    const currentAccountIndex = accounts.findIndex(
+      account => account.nickname === currentAccount.nickname
+    );
+
+    accounts.splice(currentAccountIndex, 1);
+
+    containerApp.style.opacity = 0;
+    labelWelcome.textContent = 'Войдите в свой аккаунт';
+  }
+
+  inputCloseNickname.value = '';
+  inputClosePin.value = '';
 });
