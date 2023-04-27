@@ -66,10 +66,14 @@ const inputCloseNickname = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 // отображение транзакций для аккаунта
-const displayTransactions = function (transactions) {
+const displayTransactions = function (transactions, sort = false) {
   containerTransactions.innerHTML = '';
 
-  transactions.forEach(function (trans, index) {
+  const transacs = sort
+    ? transactions.slice().sort((x, y) => x - y)
+    : transactions;
+
+  transacs.forEach(function (trans, index) {
     const transType = trans > 0 ? 'deposit' : 'withdrawal';
 
     const transactionRow = `
@@ -230,4 +234,15 @@ btnLoan.addEventListener('click', function (event) {
   }
 
   inputLoanAmount.value = '';
+});
+
+// сортировка транзакций
+
+let transactionsSorted = false;
+
+btnSort.addEventListener('click', function (event) {
+  event.preventDefault();
+
+  displayTransactions(currentAccount.transactions, !transactionsSorted);
+  transactionsSorted = !transactionsSorted;
 });
