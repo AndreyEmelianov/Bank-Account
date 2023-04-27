@@ -8,14 +8,14 @@ const account1 = {
   interest: 1.5,
   pin: 1111,
   transactionsDates: [
-    '2020-10-02T14:43:31.074Z',
-    '2020-10-29T11:24:19.761Z',
-    '2020-11-15T10:45:23.907Z',
-    '2021-01-22T12:17:46.255Z',
-    '2021-02-12T15:14:06.486Z',
-    '2021-03-09T11:42:26.371Z',
-    '2021-05-21T07:43:59.331Z',
-    '2021-06-22T15:21:20.814Z',
+    '2022-10-02T14:43:31.074Z',
+    '2022-10-29T11:24:19.761Z',
+    '2022-11-15T10:45:23.907Z',
+    '2023-01-22T12:17:46.255Z',
+    '2023-02-12T15:14:06.486Z',
+    '2023-03-09T11:42:26.371Z',
+    '2023-05-21T07:43:59.331Z',
+    '2023-05-22T15:21:20.814Z',
   ],
   currency: 'USD',
   locale: 'en-US',
@@ -27,14 +27,14 @@ const account2 = {
   interest: 1.3,
   pin: 2222,
   transactionsDates: [
-    '2020-10-02T14:43:31.074Z',
-    '2020-10-29T11:24:19.761Z',
-    '2020-11-15T10:45:23.907Z',
-    '2021-01-22T12:17:46.255Z',
-    '2021-02-12T15:14:06.486Z',
-    '2021-03-09T11:42:26.371Z',
-    '2021-05-21T07:43:59.331Z',
-    '2021-06-22T15:21:20.814Z',
+    '2021-10-02T14:43:31.074Z',
+    '2021-10-29T11:24:19.761Z',
+    '2022-11-15T10:45:23.907Z',
+    '2023-01-22T12:17:46.255Z',
+    '2023-02-12T15:14:06.486Z',
+    '2023-03-09T11:42:26.371Z',
+    '2023-05-21T07:43:59.331Z',
+    '2023-05-22T15:21:20.814Z',
   ],
   currency: 'UAH',
   locale: 'uk-UA',
@@ -47,13 +47,13 @@ const account3 = {
   pin: 3333,
   transactionsDates: [
     '2020-10-02T14:43:31.074Z',
-    '2020-10-29T11:24:19.761Z',
-    '2020-11-15T10:45:23.907Z',
-    '2021-01-22T12:17:46.255Z',
-    '2021-02-12T15:14:06.486Z',
-    '2021-03-09T11:42:26.371Z',
-    '2021-05-21T07:43:59.331Z',
-    '2021-06-22T15:21:20.814Z',
+    '2021-10-29T11:24:19.761Z',
+    '2021-11-15T10:45:23.907Z',
+    '2022-01-22T12:17:46.255Z',
+    '2022-02-12T15:14:06.486Z',
+    '2022-03-09T11:42:26.371Z',
+    '2022-05-21T07:43:59.331Z',
+    '2023-05-22T15:21:20.814Z',
   ],
   currency: 'RUB',
   locale: 'ru-RU',
@@ -65,14 +65,10 @@ const account4 = {
   interest: 1,
   pin: 4444,
   transactionsDates: [
-    '2020-10-02T14:43:31.074Z',
-    '2020-10-29T11:24:19.761Z',
-    '2020-11-15T10:45:23.907Z',
-    '2021-01-22T12:17:46.255Z',
-    '2021-02-12T15:14:06.486Z',
-    '2021-03-09T11:42:26.371Z',
-    '2021-05-21T07:43:59.331Z',
-    '2021-06-22T15:21:20.814Z',
+    '2022-10-02T14:43:31.074Z',
+    '2022-10-29T11:24:19.761Z',
+    '2022-11-15T10:45:23.907Z',
+    '2023-01-22T12:17:46.255Z',
   ],
   currency: 'EUR',
   locale: 'fr-CA',
@@ -84,14 +80,11 @@ const account5 = {
   interest: 1.1,
   pin: 5555,
   transactionsDates: [
-    '2020-10-02T14:43:31.074Z',
-    '2020-10-29T11:24:19.761Z',
-    '2020-11-15T10:45:23.907Z',
-    '2021-01-22T12:17:46.255Z',
-    '2021-02-12T15:14:06.486Z',
-    '2021-03-09T11:42:26.371Z',
-    '2021-05-21T07:43:59.331Z',
-    '2021-06-22T15:21:20.814Z',
+    '2022-10-02T14:43:31.074Z',
+    '2022-10-29T11:24:19.761Z',
+    '2022-11-15T10:45:23.907Z',
+    '2023-01-22T12:17:46.255Z',
+    '2023-02-12T15:14:06.486Z',
   ],
   currency: 'USD',
   locale: 'en-US',
@@ -126,21 +119,28 @@ const inputCloseNickname = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 // отображение транзакций для аккаунта
-const displayTransactions = function (transactions, sort = false) {
+const displayTransactions = function (account, sort = false) {
   containerTransactions.innerHTML = '';
 
   const transacs = sort
-    ? transactions.slice().sort((x, y) => x - y)
-    : transactions;
+    ? account.transactions.slice().sort((x, y) => x - y)
+    : account.transactions;
 
   transacs.forEach(function (trans, index) {
     const transType = trans > 0 ? 'deposit' : 'withdrawal';
+
+    const date = new Date(account.transactionsDates[index]);
+    const day = `${date.getDate()}`.padStart(2, '0');
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const year = date.getFullYear();
+    const transDate = `${day}/${month}/${year}`;
 
     const transactionRow = `
     <div class="transactions__row">
       <div class="transactions__type transactions__type--${transType}">
         ${index + 1} ${transType}
       </div>
+      <div class="transactions__date">${transDate}</div>
       <div class="transactions__value">${trans.toFixed(2)}$</div>
     </div>
     `;
@@ -199,12 +199,14 @@ const displayTotal = function (account) {
 // имплементация логина в приложении
 
 const updateUi = function (currentAccount) {
-  displayTransactions(currentAccount.transactions);
+  displayTransactions(currentAccount);
   displayBalance(currentAccount);
   displayTotal(currentAccount);
 };
 
 let currentAccount;
+
+// Добавление даты
 
 btnLogin.addEventListener('click', function (event) {
   event.preventDefault();
@@ -217,6 +219,13 @@ btnLogin.addEventListener('click', function (event) {
     labelWelcome.textContent = `Рады, что вы снова с нами, ${
       currentAccount.userName.split(' ')[0]
     }!`;
+
+    const now = new Date();
+    const day = `${now.getDate()}`.padStart(2, '0');
+    const month = `${now.getMonth() + 1}`.padStart(2, '0');
+    const year = now.getFullYear();
+
+    labelDate.textContent = `${day}/${month}/${year}`;
 
     containerApp.style.opacity = 100;
 
@@ -251,6 +260,10 @@ btnTransfer.addEventListener('click', function (event) {
   ) {
     currentAccount.transactions.push(-transferAmount);
     recipientAccount.transactions.push(transferAmount);
+
+    currentAccount.transactionsDates.push(new Date().toISOString());
+    recipientAccount.transactionsDates.push(new Date().toISOString());
+
     updateUi(currentAccount);
   }
 });
@@ -290,6 +303,9 @@ btnLoan.addEventListener('click', function (event) {
     currentAccount.transactions.some(trans => trans >= (loanAmount * 10) / 100)
   ) {
     currentAccount.transactions.push(loanAmount);
+
+    currentAccount.transactionsDates.push(new Date().toISOString());
+
     updateUi(currentAccount);
   }
 
@@ -303,6 +319,6 @@ let transactionsSorted = false;
 btnSort.addEventListener('click', function (event) {
   event.preventDefault();
 
-  displayTransactions(currentAccount.transactions, !transactionsSorted);
+  displayTransactions(currentAccount, !transactionsSorted);
   transactionsSorted = !transactionsSorted;
 });
