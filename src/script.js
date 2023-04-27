@@ -65,6 +65,7 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+// отображение транзакций для аккаунта
 const displayTransactions = function (transactions) {
   containerTransactions.innerHTML = '';
 
@@ -85,3 +86,17 @@ const displayTransactions = function (transactions) {
 };
 
 displayTransactions(account1.transactions);
+
+// создание никнеймов для каждого аккаунта
+const createNicknames = function (accounts) {
+  accounts.forEach(function (acc) {
+    acc.nickname = acc.userName
+      .toLowerCase()
+      .split(' ')
+      .map(word => word[0])
+      .join('');
+  });
+};
+
+createNicknames(accounts);
+console.log(accounts);
