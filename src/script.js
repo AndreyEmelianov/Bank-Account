@@ -101,8 +101,9 @@ console.log(accounts);
 
 // отображаем баланс  аккаунта
 
-const displayBalance = function (transactions) {
-  const balance = transactions.reduce((acc, trans) => acc + trans, 0);
+const displayBalance = function (account) {
+  const balance = account.transactions.reduce((acc, trans) => acc + trans, 0);
+  account.balance = balance;
 
   labelBalance.textContent = `${balance}$`;
 };
@@ -133,6 +134,12 @@ const displayTotal = function (account) {
 
 // имплементация логина в приложении
 
+const updateUi = function (currentAccount) {
+  displayTransactions(currentAccount.transactions);
+  displayBalance(currentAccount);
+  displayTotal(currentAccount);
+};
+
 let currentAccount;
 
 btnLogin.addEventListener('click', function (event) {
@@ -153,8 +160,33 @@ btnLogin.addEventListener('click', function (event) {
     inputLoginPin.value = '';
     inputLoginPin.blur();
 
-    displayTransactions(currentAccount.transactions);
-    displayBalance(currentAccount.transactions);
-    displayTotal(currentAccount);
+    updateUi(currentAccount);
+  }
+});
+
+// имплементация перевода(transfer) денег
+
+btnTransfer.addEventListener('click', function (event) {
+  event.preventDefault();
+
+  const transferAmount = +inputTransferAmount.value;
+  const recipientNickname = inputTransferTo.value;
+
+  const recipientAccount = accounts.find(
+    account => account.nickname === recipientNickname
+  );
+
+  inputTransferTo.value = '';
+  inputTransferAmount.value = '';
+
+  if (
+    transferAmount > 0 &&
+    currentAccount.balance >= transferAmount &&
+    recipientAccount &&
+    currentAccount.nickname !== recipientAccount.nickname
+  ) {
+    currentAccount.transactions.push(-transferAmount);
+    recipientAccount.transactions.push(transferAmount);
+    updateUi(currentAccount);
   }
 });
