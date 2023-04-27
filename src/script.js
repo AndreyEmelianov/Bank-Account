@@ -85,8 +85,6 @@ const displayTransactions = function (transactions) {
   });
 };
 
-displayTransactions(account1.transactions);
-
 // создание никнеймов для каждого аккаунта
 const createNicknames = function (accounts) {
   accounts.forEach(function (acc) {
@@ -109,30 +107,54 @@ const displayBalance = function (transactions) {
   labelBalance.textContent = `${balance}$`;
 };
 
-displayBalance(account1.transactions);
-
 // отображение полученных и выведенных средств
 
-const displayTotal = function (transactions) {
-  const depositesTotal = transactions
+const displayTotal = function (account) {
+  const depositesTotal = account.transactions
     .filter(trans => trans > 0)
     .reduce((acc, trans) => acc + trans, 0);
 
   labelSumIn.textContent = `${depositesTotal}$`;
 
-  const withdrawalsTotal = transactions
+  const withdrawalsTotal = account.transactions
     .filter(trans => trans < 0)
     .reduce((acc, trans) => acc + trans, 0);
 
   labelSumOut.textContent = `${withdrawalsTotal}$`;
 
-  const interestTotal = transactions
+  const interestTotal = account.transactions
     .filter(trans => trans > 0)
-    .map(deposit => (deposit * 1.1) / 100)
+    .map(deposit => (deposit * account.interest) / 100)
     .filter(interest => interest >= 5)
     .reduce((acc, interest) => acc + interest, 0);
 
   labelSumInterest.textContent = `${interestTotal}$`;
 };
 
-displayTotal(account1.transactions);
+// имплементация логина в приложении
+
+let currentAccount;
+
+btnLogin.addEventListener('click', function (event) {
+  event.preventDefault();
+
+  currentAccount = accounts.find(
+    account => account.nickname === inputLoginUsername.value
+  );
+
+  if (currentAccount?.pin === +inputLoginPin.value) {
+    labelWelcome.textContent = `Рады, что вы снова с нами, ${
+      currentAccount.userName.split(' ')[0]
+    }!`;
+
+    containerApp.style.opacity = 100;
+
+    inputLoginUsername.value = '';
+    inputLoginPin.value = '';
+    inputLoginPin.blur();
+
+    displayTransactions(currentAccount.transactions);
+    displayBalance(currentAccount.transactions);
+    displayTotal(currentAccount);
+  }
+});
