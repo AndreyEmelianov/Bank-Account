@@ -100,3 +100,13 @@ const createNicknames = function (accounts) {
 
 createNicknames(accounts);
 console.log(accounts);
+
+// отображаем баланс  аккаунта
+
+const displayBalance = function (transactions) {
+  const balance = transactions.reduce((acc, trans) => acc + trans, 0);
+
+  labelBalance.textContent = `${balance}$`;
+};
+
+displayBalance(account1.transactions);
