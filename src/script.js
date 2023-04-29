@@ -119,7 +119,7 @@ const inputCloseNickname = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 // даты транзакций
-const formatTransactionDate = function (date) {
+const formatTransactionDate = function (date, locale) {
   const getDayBetween2Dates = (date1, date2) =>
     Math.round(Math.abs((date2 - date1) / (1000 * 60 * 60 * 24)));
   const daysPassed = getDayBetween2Dates(new Date(), date);
@@ -131,12 +131,23 @@ const formatTransactionDate = function (date) {
   } else if (daysPassed <= 5) {
     return `${daysPassed} дня назад`;
   } else {
-    const day = `${date.getDate()}`.padStart(2, '0');
-    const month = `${date.getMonth() + 1}`.padStart(2, '0');
-    const year = date.getFullYear();
+    // const day = `${date.getDate()}`.padStart(2, '0');
+    // const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    // const year = date.getFullYear();
 
-    return `${day}/${month}/${year}`;
+    // return `${day}/${month}/${year}`;
+
+    return new Intl.DateTimeFormat(locale).format(date);
   }
+};
+
+// форматирование валюты
+
+const formatCurrency = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+  }).format(value);
 };
 
 // отображение транзакций для аккаунта
@@ -151,7 +162,13 @@ const displayTransactions = function (account, sort = false) {
     const transType = trans > 0 ? 'deposit' : 'withdrawal';
 
     const date = new Date(account.transactionsDates[index]);
-    const transDate = formatTransactionDate(date);
+    const transDate = formatTransactionDate(date, account.locale);
+
+    const formatedTrans = formatCurrency(
+      trans,
+      account.locale,
+      account.currency
+    );
 
     const transactionRow = `
     <div class="transactions__row">
@@ -159,7 +176,7 @@ const displayTransactions = function (account, sort = false) {
         ${index + 1} ${transType}
       </div>
       <div class="transactions__date">${transDate}</div>
-      <div class="transactions__value">${trans.toFixed(2)}$</div>
+      <div class="transactions__value">${formatedTrans}</div>
     </div>
     `;
 
@@ -187,7 +204,11 @@ const displayBalance = function (account) {
   const balance = account.transactions.reduce((acc, trans) => acc + trans, 0);
   account.balance = balance;
 
-  labelBalance.textContent = `${balance.toFixed(2)}$`;
+  labelBalance.textContent = formatCurrency(
+    balance,
+    account.locale,
+    account.currency
+  );
 };
 
 // отображение полученных и выведенных средств
@@ -197,13 +218,21 @@ const displayTotal = function (account) {
     .filter(trans => trans > 0)
     .reduce((acc, trans) => acc + trans, 0);
 
-  labelSumIn.textContent = `${depositesTotal.toFixed(2)}$`;
+  labelSumIn.textContent = formatCurrency(
+    depositesTotal,
+    account.locale,
+    account.currency
+  );
 
   const withdrawalsTotal = account.transactions
     .filter(trans => trans < 0)
     .reduce((acc, trans) => acc + trans, 0);
 
-  labelSumOut.textContent = `${withdrawalsTotal.toFixed(2)}$`;
+  labelSumOut.textContent = formatCurrency(
+    withdrawalsTotal,
+    account.locale,
+    account.currency
+  );
 
   const interestTotal = account.transactions
     .filter(trans => trans > 0)
@@ -211,7 +240,11 @@ const displayTotal = function (account) {
     .filter(interest => interest >= 5)
     .reduce((acc, interest) => acc + interest, 0);
 
-  labelSumInterest.textContent = `${interestTotal.toFixed(2)}$`;
+  labelSumInterest.textContent = formatCurrency(
+    interestTotal,
+    account.locale,
+    account.currency
+  );
 };
 
 // имплементация логина в приложении
@@ -238,12 +271,27 @@ btnLogin.addEventListener('click', function (event) {
       currentAccount.userName.split(' ')[0]
     }!`;
 
-    const now = new Date();
-    const day = `${now.getDate()}`.padStart(2, '0');
-    const month = `${now.getMonth() + 1}`.padStart(2, '0');
-    const year = now.getFullYear();
+    // const now = new Date();
+    // const day = `${now.getDate()}`.padStart(2, '0');
+    // const month = `${now.getMonth() + 1}`.padStart(2, '0');
+    // const year = now.getFullYear();
 
-    labelDate.textContent = `${day}/${month}/${year}`;
+    // labelDate.textContent = `${day}/${month}/${year}`;
+
+    const now = new Date();
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      weekday: 'long',
+    };
+
+    labelDate.textContent = new Intl.DateTimeFormat(
+      currentAccount.locale,
+      options
+    ).format(now);
 
     containerApp.style.opacity = 100;
 
