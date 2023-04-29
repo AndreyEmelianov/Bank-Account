@@ -247,6 +247,29 @@ const displayTotal = function (account) {
   );
 };
 
+const startLogoutTimer = function () {
+  let time = 300;
+  const logOutTimerCallback = function () {
+    const minutes = String(Math.trunc(time / 60)).padStart(2, '0');
+    const seconds = String(time % 60).padStart(2, '0');
+    labelTimer.textContent = `${minutes}:${seconds}`;
+
+    if (time === 0) {
+      clearInterval(logOutTimer);
+
+      containerApp.style.opacity = 0;
+      labelWelcome.textContent = `Войдите в свой аккаунт`;
+    }
+    time--;
+  };
+
+  logOutTimerCallback();
+
+  const logOutTimer = setInterval(logOutTimerCallback, 1000);
+
+  return logOutTimer;
+};
+
 // имплементация логина в приложении
 
 const updateUi = function (currentAccount) {
@@ -256,8 +279,7 @@ const updateUi = function (currentAccount) {
 };
 
 let currentAccount;
-
-// Добавление даты
+let currentLogOutTimer;
 
 btnLogin.addEventListener('click', function (event) {
   event.preventDefault();
@@ -299,6 +321,9 @@ btnLogin.addEventListener('click', function (event) {
     inputLoginPin.value = '';
     inputLoginPin.blur();
 
+    if (currentLogOutTimer) clearInterval(currentLogOutTimer);
+    currentLogOutTimer = startLogoutTimer();
+
     updateUi(currentAccount);
   }
 });
@@ -331,6 +356,10 @@ btnTransfer.addEventListener('click', function (event) {
     recipientAccount.transactionsDates.push(new Date().toISOString());
 
     updateUi(currentAccount);
+
+    //reset timer
+    clearInterval(currentLogOutTimer);
+    currentLogOutTimer = startLogoutTimer();
   }
 });
 
@@ -368,14 +397,20 @@ btnLoan.addEventListener('click', function (event) {
     loanAmount > 0 &&
     currentAccount.transactions.some(trans => trans >= (loanAmount * 10) / 100)
   ) {
-    currentAccount.transactions.push(loanAmount);
+    setTimeout(() => {
+      currentAccount.transactions.push(loanAmount);
 
-    currentAccount.transactionsDates.push(new Date().toISOString());
+      currentAccount.transactionsDates.push(new Date().toISOString());
 
-    updateUi(currentAccount);
+      updateUi(currentAccount);
+    }, 3000);
   }
 
   inputLoanAmount.value = '';
+
+  //reset timer
+  clearInterval(currentLogOutTimer);
+  currentLogOutTimer = startLogoutTimer();
 });
 
 // сортировка транзакций
